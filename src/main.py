@@ -45,10 +45,11 @@ class MainWindow(QMainWindow,MainMixin):
         self.prepare_menubar()
         
         self.prepare_statusbar()
-        self.prepare_actions()
         
         self.components['object_tree'].addLines()
         
+        self.prepare_actions()
+
         self.prepare_console()
         
         self.fill_dummy()
