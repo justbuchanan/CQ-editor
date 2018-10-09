@@ -15,7 +15,7 @@ from OCC.gp import gp_Trsf, gp_Vec, gp_Ax3, gp_Dir, gp_Pnt, gp_Ax1
 
 from ..mixins import ComponentMixin
 from ..icons import icon
-from ..cq_utils import make_AIS, export, to_occ_color
+from ..cq_utils import make_AIS, export, to_occ_color, tuple_to_occ_color
 from ..utils import splitter, layout
 
 class TopTreeItem(QTreeWidgetItem):
@@ -241,6 +241,7 @@ class ObjectTree(QWidget,ComponentMixin):
         for name,shape in objects_f.items():
             ais = make_AIS(shape)
             ais.SetTransparency(alpha)
+            ObjectTree.addCqObjColor(shape, ais)
             ais_list.append(ais)
             root.addChild(ObjectTreeItem(name,
                                          shape=shape,
@@ -248,7 +249,17 @@ class ObjectTree(QWidget,ComponentMixin):
                                          sig=self.sigObjectPropertiesChanged))
     
         self.sigObjectsAdded.emit(ais_list)
-    
+
+
+    @classmethod
+    def addCqObjColor(cls, cqobj, ais):
+        # hack to set per-object colors
+        if hasattr(cqobj, '_color'):
+            c = cqobj._color
+            assert(isinstance(c, tuple))
+            ais.SetColor(tuple_to_occ_color(c))
+
+
     @pyqtSlot(object,str,float)
     def addObject(self,obj,name='',alpha=.0,):
         
@@ -256,7 +267,9 @@ class ObjectTree(QWidget,ComponentMixin):
         
         ais = make_AIS(obj)
         ais.SetTransparency(alpha)
-        
+
+        ObjectTree.addCqObjColor(obj, ais)
+
         root.addChild(ObjectTreeItem(name,
                                      shape=obj,
                                      ais=ais,

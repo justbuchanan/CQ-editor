@@ -28,7 +28,10 @@ def export(obj : cq.Workplane, type : str, file, precision=1e-1):
         comp.exportStep(file)
     elif type == 'brep':
         comp.exportBrep(file)
-        
+
+def tuple_to_occ_color(color):
+    return Quantity_Color(color[0]/255.0,color[1]/255.0,color[2]/255.0, TOC_RGB)
+
 def to_occ_color(color):
     
     return Quantity_Color(color.redF(),
